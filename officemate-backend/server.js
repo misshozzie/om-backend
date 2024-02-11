@@ -3,10 +3,16 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var connectDB = require("./client/mongo");
 
-var indexRouter = require('./routes/index');
+require("dotenv").config();
+require("./routes/index");
+
+//var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const { connect } = require('http2');
 
+connectDB();
 var app = express();
 
 // view engine setup
@@ -18,6 +24,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors(corsOptions));
+
+app.use(securityMiddleware.checkJWT);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
