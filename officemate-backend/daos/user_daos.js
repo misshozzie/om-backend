@@ -1,59 +1,52 @@
-const mongoose = require("mongoose");
-const Joi = require('joi');
-const Schema = mongoose.Schema;
+const { client } = require("../client/mongo");
 
-const userSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    salt: {
-      type: String,
-      required: true,
-    },
-    iterations: {
-      type: Number,
-      required: true,
-    },
-    token: {
-      type: String,
-    },
-    expire_at: {
-      type: Number, 
-    },
-    accountType: {
-      type: String,
-      enum: ["basic", "premium"],
-      default: "basic",
-    },
-    notes: {
-      notes: [{ type: Schema.Types.ObjectId, ref: "Note" }],
-    },
-  },
-  { timestamps: true }
-);
+/**
+ * Validates user data.
+ * @param {Object} userData The user data to validate.
+ * @returns {Object} An object with two properties: isValid and errors.
+ */
+function validateUserData(userData) {
+    const errors = [];
+    if (!userData.name || typeof userData.name !== 'string' || userData.name.trim().length === 0) {
+        errors.push('Name is required and must be a string.');
+    }
 
-function validateUser(user) {
-    const schema = Joi.object({
-        name: Joi.string().required(), 
-        password: Joi.string().required(),
-        email: Joi.string().required(),
-        salt: Joi.string().required(),
-        iterations: Joi.number().required(),
-    });
+    if (!userData.email || typeof userData.email !== 'string' || !/^\S+@\S+\.\S+$/.test(userData.email)) {
+        errors.push('A valid email is required.');
+    }
 
-    return schema.validate(user);
+    // Basic password validation: non-empty string. You might want to enforce more rules (length, complexity)
+    if (!userData.password || typeof userData.password !== 'string' || userData.password.length < 6) {
+        errors.push('Password is required and must be at least 6 characters long.');
+    }
+
+    // Optionally validate other fields (salt, iterations, accountType) based on your requirements
+
+    return {
+        isValid: errors.length === 0,
+        errors,
+    };
 }
 
-const User = mongoose.model("User", userSchema); 
+async function createUser(userData) {
+    const validation = validateUserData(userData);
+    if (!validation.isValid) {
+        // Return or throw an error based on your application's error handling strategy
+        return { success: false, errors: validation.errors };
+    }
 
-module.exports = { User, validateUser };
+    const db = getDb();
+    try {
+        const result = await db.collection('users').insertOne(userData);
+        return { success: true, userId: result.insertedId };
+    } catch (error) {
+        // Handle database errors (e.g., duplicate emails) based on your needs
+        console.error('Error creating user:', error);
+        return { success: false, errors: ['Failed to create user due to a server error.'] };
+    }
+}
+
+// Usage example (make sure to handle the promise resolution/rejection properly in your code)
+// createUser({ name: "John Doe", email: "invalidEmail", password: "123456" })
+//   .then(result => console.log(result))
+//   .catch(error => console.error(error));

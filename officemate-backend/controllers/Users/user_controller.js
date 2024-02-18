@@ -1,79 +1,48 @@
-const modelUsers = require("../../models/Users/user_models");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { userCollection } = require("../../client/mongo");
 
-module.exports = {
-    getUsers,
-    getLoginDetails,
-    loginUser,
-    createUser,
-    logoutUser,
-    updateUser
-}
-
-async function getUsers(req, res) {
-    try {
-        const userData = await modelUsers.getUsers(req.query);
-        res.json({users: userData})
-    } catch (err) {
-        res.status(500).json({ errorMsg: err.message });
-    }
-}
-
-async function getLoginDetails(req, res) {
-    try {
-        const loginDetails = await modelUsers.getLoginDetails(req.query);
-        if (loginDetails.success != true) {
-          res.status(400).json({errorMsg: loginDetails.error})
-          return
-        }
-        res.json(loginDetails.data)
-    } catch (err) {
-        res.status(500).json({ errorMsg: err.message });
-    }
+exports.createUser = async (req, res) => {
+  const { username, email, password, role = "user" } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await userCollection.insertOne({
+      username,
+      email,
+      password: hashedPassword,
+      role,
+    });
+    res.status(201).json({ message: "User created successfully", userId: newUser.insertedId });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error", details: error.message });
   }
+};
 
-async function loginUser(req, res) {
-    try {
-        const token = await modelUsers.loginUser(req.body);
-        console.log(token);
-        if (!token.success) {
-          res.status(400).json({errorMsg: token.error})
-          return 
-        }
-        res.json(token.data)
-    } catch (err) {
-        res.status(500).json({ errorMsg: err.message });
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await userCollection.findOne({ email });
+    if (user && await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign({ userId: user._id, email }, 'your_jwt_secret', { expiresIn: '1h' }); // Replace 'your_jwt_secret' with your actual secret
+      res.status(200).json({ message: "Login successful", token });
+    } else {
+      res.status(401).json({ error: "Invalid credentials" });
     }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error", details: error.message });
   }
+};
 
-  async function createUser(req, res) {
-    try {
-      const userData = await modelUsers.createUser(req.body);
-      res.redirect(userData); //"/users"
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ errorMsg: err.message });
+exports.updateUser = async (req, res) => {
+  const { userId } = req.params;
+  const { email, username } = req.body;
+  try {
+    const result = await userCollection.updateOne({ _id: userId }, { $set: { email, username } });
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "User not found or data unchanged" });
     }
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error", details: error.message });
   }
-
-  async function logoutUser(req, res) {
-    try {
-      const result = await modelUsers.logoutUser(req.body);
-      if (!result.success) {
-        res.status(400).json({ errorMsg: result.error });
-        return;
-      }
-      res.json(result.data);
-    } catch (err) {
-      res.status(500).json({ errorMsg: err.message });
-    }
-  }
-
-  async function updateUser(req, res) {
-    try {
-      const userData = await modelUsers.updateUser(req.body);
-      res.json(userData);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ errorMsg: err.message });
-    }
-  }
+};
