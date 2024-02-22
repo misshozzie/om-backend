@@ -36,4 +36,4 @@ function verifyJWT(token) {
       }
     );
     return payload;
-  }
+  } 

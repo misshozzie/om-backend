@@ -1,6 +1,6 @@
 //var createError = require('http-errors');
 const express = require('express');
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 5173;
 const path = require('path');
 const cookieParser = require('cookie-parser');
 //const userController = require("../../om-backend/officemate-backend/controllers/Users/user_controller");
@@ -45,8 +45,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors(corsOptions));
-//app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173' }));
+
 
 app.use(securityMiddleware.checkJWT);
 
