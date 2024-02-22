@@ -1,4 +1,4 @@
-const { notesCollection } = require("../../client/mongo"); // Adjust the path as necessary
+const { notesCollection } = require("../client/mongo"); // Adjust the path as necessary
 exports.createNote = async (req, res) => {
   const { title, content, userId } = req.body;
   try {
