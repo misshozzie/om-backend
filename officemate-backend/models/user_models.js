@@ -1,6 +1,6 @@
 const express = require("express");
-const { User:usersDao } = require("../../daos/user_daos");
-const utilSecurity = require("../../util/security");
+const { User:usersDao } = require("../daos/user_daos");
+const utilSecurity = require("../util/security");
 
 const app = express();
 app.use(express.urlencoded({ extended: true })); 
@@ -53,9 +53,9 @@ async function loginUser(body) {
     }
   
     const jwtPayload = {
-      user: user.userName,
+      user: user.username,
       email: user.email,
-      // is_admin: user.is_admin,
+      is_admin: user.is_admin,
     };
     const token = utilSecurity.createJWT(jwtPayload);
     const expiry = utilSecurity.getExpiry(token);

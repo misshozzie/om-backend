@@ -1,7 +1,7 @@
 const express = require("express");
-const converterController = require("../../controllers/Converter/converter_controller");
+const converterController = require("../controllers/converter_controller");
 const router = express.Router();
-const securityMiddleware = require("../../middlewares/security");
+const securityMiddleware = require("../middlewares/security");
 
 // Converter Routes
 router.get('/', (req, res) => {

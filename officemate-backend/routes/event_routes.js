@@ -1,7 +1,7 @@
 const express = require("express");
-const eventController = require("../../controllers/Events/event_controller");
+const eventController = require("../controllers/event_controller");
 const router = express.Router();
-const securityMiddleware = require("../../middlewares/security");
+const securityMiddleware = require("../middlewares/security");
 
 // Event Routes
 router.get('/', (req, res) => {

@@ -21,7 +21,7 @@ require("dotenv").config();
 require("./routes/index");
 
 // const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/Users/user_routes");
+const usersRouter = require("./routes/user_routes");
 //const notesRouter = require("./routes/Notes/note_routes");
 // const { constants } = require('buffer');
 //const { connect } = require('http2');
@@ -50,9 +50,9 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 
 app.use(securityMiddleware.checkJWT);
 
-const notesRouter = require("../officemate-backend/routes/Notes/note_routes");
-const eventsRouter = require("../officemate-backend/routes/event/event_routes");
-const converterRouter = require("../officemate-backend/routes/converter/converter_routes");
+const notesRouter = require("../officemate-backend/routes/note_routes");
+const eventsRouter = require("../officemate-backend/routes/event_routes");
+const converterRouter = require("../officemate-backend/routes/converter_routes");
 
 app.use("/users", usersRouter);
 app.use("/notes", notesRouter);

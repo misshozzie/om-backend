@@ -1,7 +1,7 @@
 const express = require("express");
-const noteController = require("../../controllers/Notes/note_controller");
+const noteController = require("../controllers/note_controller");
 const router = express.Router();
-const securityMiddleware = require("../../middlewares/security");
+const securityMiddleware = require("../middlewares/security");
 
 // Note Routes
 router.get('/', (req, res) => {

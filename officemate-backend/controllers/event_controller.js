@@ -1,4 +1,4 @@
-const { eventCollection } = require("../../client/mongo");
+const { eventCollection } = require("../client/mongo");
 //const { ObjectId } = require('mongodb');
 
 exports.createEvent = async (req, res) => {
