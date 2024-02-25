@@ -1,71 +1,53 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-// Define the User schema with validation
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   email: {
     type: String,
-    required: [true, 'A valid email is required.'],
-    unique: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please fill a valid email address'],
+    required: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
   },
   password: {
     type: String,
-    required: [true, 'Password is required and must be at least 6 characters long.'],
+    required: true,
     minlength: 6,
   },
-  salt: String,
-  iterations: Number,
-  token: String,
-  expire_at:Date,
-  notes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Note',
-  }],
-  calendar: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Calendar',
-  }],
   role: {
     type: String,
     required: true,
-    enum: ['admin', 'user'], 
+    enum: ["admin", "user"],
   },
   username: {
     type: String,
-    required: [true, 'Name is required and must be a string.'],
+    required: true,
+    minlength: 3,
+    maxlength: 30,
+    match: [/^[a-zA-Z0-9]+$/, 'Username can only contain alphanumeric characters'],
   },
-});
+  accountType: {
+    type: String,
+    enum: ["basic", "premium"],
+    default: "basic",
+  },
+  trips: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Trip",
+  }],
+}, { timestamps: true });
 
-// Compile the schema into a model
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
-class UserDao {
-  // Method to validate user data (could be extended or modified as needed)
-  validateUserData(userData) {
-    const errors = [];
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
-  }
+function validateUser(user) {
+  const schema = Joi.object({
+    userName: Joi.string().required(),
+    password: Joi.string().required(),
+    email: Joi.string().required().email(),
+    role: Joi.string().valid("admin", "user").required(),
+    salt: Joi.string().required(),
+    iterations: Joi.number().required(),
+  });
 
-  // Method to create a single user
-  async createUser(userData) {
-    const validation = this.validateUserData(userData);
-    if (!validation.isValid) {
-      return { success: false, errors: validation.errors };
-    }
-
-    try {
-      const user = await User.create(userData);
-      return { success: true, userId: user._id };
-    } catch (error) {
-      console.error('Error creating user:', error);
-      const errors = error.errors ? Object.values(error.errors).map(err => err.message) : ['Failed to create user due to a server error.'];
-      return { success: false, errors };
-    }
-  }
+  const User = mongoose.model("User", userSchema);
 }
 
-const userDao = new UserDao();
-module.exports = userDao;
+module.exports = { User };

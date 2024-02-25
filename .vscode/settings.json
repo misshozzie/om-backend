@@ -1,10 +1,15 @@
 {
     "cSpell.words": [
+        "alphanum",
         "checklogin",
         "daos",
+        "eventid",
+        "maxlength",
+        "notesid",
         "officemate",
         "passwordnew",
         "passwordold",
-        "Pdfs"
+        "Pdfs",
+        "taskid"
     ]
 }

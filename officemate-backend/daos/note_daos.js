@@ -1,35 +1,15 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const TaskSchema = require("./task_daos").schema;
 
 const noteSchema = new Schema({
-    title: {
-        type: String,
-        required: [true, "Title is required and must be a string."],
-        trim: true,
-    },
-    description: {
-        type: String,
-        required: [true, "Content is required and must be a string."],
-        trim: true,
-    },
-    userId: {
-        type: Schema.Types.ObjectId,
-        required: [true, "User ID is required."],
-    },
-    tasks: [
-        {
-            content: {
-                type: String,
-                required: [true, "Task content is required and must be a string."],
-                trim: true,
-            },
-            completed: {
-                type: Boolean,
-                default: false,
-            },
-        },
-    ],
-});
+  Title: { type: String, required: true },
+  Date: { type: Date, required: true },
+  Description: { type: String, required: true },
+  Calendar: { type: Boolean, default: true },
+  Tasks: [TaskSchema], 
+}, { timestamps: true });
+
 
 const Note = mongoose.model("Note", noteSchema);
 module.exports = Note;
