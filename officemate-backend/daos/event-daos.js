@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
-const Note = require("./note_daos");
-const Joi = require('joi');
-const noteSchema = Note.schema;
 
-const eventSchema = Joi.object({
-  Note: Joi.array().items(noteSchema), 
+const eventSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  start: Date,
+  end: Date,
 });
 
-module.exports = mongoose.model('Event', eventSchema);
+const Event = mongoose.model('Event', eventSchema);
+
+module.exports = Event;
+
 

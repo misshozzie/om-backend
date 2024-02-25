@@ -2,7 +2,7 @@ const taskModel = require("../models/tasks");
 
 module.exports = {
   newTask,
-  getAllTasks,
+  showTasks,
   updateTasks,
   deleteTask,
   updateTasks,
@@ -33,7 +33,7 @@ async function newTask(req, res) {
   };
   
 /* === ALL TASKS === */
-async function getAllTasks(req, res) {
+async function showTasks(req, res) {
     const username = req.params.username;
     try {
       const noteData = await taskModel.getAll(username);

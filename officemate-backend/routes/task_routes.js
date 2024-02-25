@@ -7,7 +7,7 @@ const securityMiddleware = require("../middlewares/security");
 router.get(
   "/notesid/:taskid",
   securityMiddleware.checkLogin,
-  taskController.getAllTasks
+  taskController.showTasks
 );
 
 /* === ROUTE NEW TASK === */

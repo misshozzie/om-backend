@@ -12,7 +12,7 @@ router.get(
 
 /* === ROUTE NEW NOTE === */
 router.post(
-  "/:username",
+  "/notes/create/:username",
   securityMiddleware.checkLogin,
   noteController.newNote
 );

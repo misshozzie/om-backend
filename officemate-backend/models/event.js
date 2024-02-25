@@ -2,28 +2,49 @@ const { User: userDao } = require("../daos/user_daos");
 const noteDao = require("../daos/note_daos");
 
 
+module.exports = { getAll, newEvent };
+
 async function getAll(username) {
   try {
-    // Assuming the User model has a reference to notes (e.g., an array of note IDs)
     const user = await userDao.findOne({ username: username }).populate('notes');
     if (!user) {
       throw new Error('User not found');
     }
-    
-    // If the user document includes the notes directly after population
-    const notesForCalendar = user.notes; // Assuming 'notes' is populated with note documents
-    
-    // Format or process notes for the calendar as needed here
-    // This step depends on how you intend to use the notes in the calendar
+    const notesForCalendar = user.notes; 
 
     return notesForCalendar;
   } catch (error) {
     console.error('Failed to fetch notes:', error);
-    throw error; // Rethrow or handle error as appropriate for your application's error handling strategy
+    throw error; 
   }
 }
 
-module.exports = { getAll };
+
+/*=== NEW EVENT ===*/
+async function newEvent(req, res) {
+  try {
+    const { Title, Description, Date } = req.body;
+    const newEvent = {
+      Title,
+      Description,
+      Date,
+    };
+
+    const result = await eventModel.insertOne(newEvent);
+
+    if (result.insertedId) {
+      res.status(201).json({
+        message: "Event created successfully",
+        id: result.insertedId,
+      });
+    } else {
+      res.status(500).json({ error: "Failed to create event" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+}
+
 
 
 
