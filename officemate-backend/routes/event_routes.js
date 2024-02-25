@@ -19,6 +19,6 @@ router.delete(
 
 
 /* === ROUTE NEW EVENTS === */
-router.post("/eventid", securityMiddleware.checkJWT, eventController.NewEvent);
+router.post("/events", securityMiddleware.checkJWT, eventController.newEvent);
 
 module.exports = router;

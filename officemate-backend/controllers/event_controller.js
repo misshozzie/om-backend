@@ -1,6 +1,6 @@
 const eventModel = require("../models/event");
 
-module.exports = { NewEvent, deleteEvent, getAllEvents };
+module.exports = { newEvent, deleteEvent, getAllEvents };
 
 /* === GET ALL EVENTS=== */
 async function getAllEvents(req, res) {
@@ -16,18 +16,18 @@ async function getAllEvents(req, res) {
 }
 
 /* === NEW EVENT == */
-async function NewEvent(req, res) {
+async function newEvent(req, res) {
   try {
-    const { title, description, date } = req.body;
-    const newEvent = { title, description, date };
-    const result = await eventModel.insertOne(newEvent);
-    res.status(201).json({
-      message: "Event created successfully",
-      id: result.insertedId,
-    });
+      const { title, description, start, end } = req.body;
+      const newEvent = { title, description, start, end };
+      const result = await eventModel.insertOne(newEvent);
+      res.status(201).json({
+          message: "Event created successfully",
+          id: result.insertedId,
+      });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error." });
-}
+      res.status(500).json({ error: "Internal server error." });
+  }
 };
 
  /* === DELETE EVENT === */

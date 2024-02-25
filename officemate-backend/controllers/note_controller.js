@@ -22,29 +22,22 @@ async function getAllNotes(req, res) {
 }
 
 /* === NEW NOTE === */
-async function newNote(req, res) {
+async function newNote (req, res) {
+//const newNote = async (req, res) => {
   try {
-    const { Title, Date, Description, Calendar, Tasks} = req.body;
-    const newNote = {
-      Title,
-      Date,
-      Description,
-      Calendar,
-      Tasks,
-    };
-
-    const result = await noteModel.insertOne(newNote);
-
-    if (result.insertedId) {
-      res.status(201).json({
-        message: "Note created successfully",
-        id: result.insertedId,
-      });
-    } else {
-      res.status(500).json({ error: "Failed to create note" });
-    }
+      const { Title, Date, Description, Calendar, Tasks } = req.body;
+      const newNote = { Title, Date, Description, Calendar, Tasks };
+      const result = await noteModel.insertOne(username, newNote);
+      if (result.insertedId) {
+          res.status(201).json({
+              message: "Note created successfully",
+              id: result.insertedId,
+          });
+      } else {
+          res.status(500).json({ error: "Failed to create note" });
+      }
   } catch (error) {
-    res.status(500).json({ error: "Internal server error." });
+      res.status(500).json({ error: "Internal server error." });
   }
 };
 
