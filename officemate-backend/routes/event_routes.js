@@ -1,13 +1,24 @@
 const express = require("express");
-const eventController = require("../controllers/event_controller");
 const router = express.Router();
+const eventController = require("../controllers/event_controller");
 const securityMiddleware = require("../middlewares/security");
 
-// Event Routes
-router.get('/', (req, res) => {
-    res.send('User route is working');
-app.post("/events", securityMiddleware.checkLogin, eventController.createEvent);
-app.delete("/events/:id", securityMiddleware.checkLogin, eventController.deleteEvent);
-});
+/* === ROUTE GET ALL EVENTS === */
+router.get(
+  "/:eventid",
+  securityMiddleware.checkJWT,
+  eventController.getAllEvents
+)
+
+/* === ROUTE DELETE EVENTS === */
+router.delete(
+  "/:eventid",
+  securityMiddleware.checkJWT,
+  eventController.deleteEvent
+);
+
+
+/* === ROUTE NEW EVENTS === */
+router.post("/eventid", securityMiddleware.checkJWT, eventController.NewEvent);
 
 module.exports = router;

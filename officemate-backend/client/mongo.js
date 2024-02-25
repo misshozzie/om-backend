@@ -1,45 +1,23 @@
-const { ServerApiVersion } = require("mongodb");
-const { MongoClient } = require("mongodb");
-require("dotenv").config();
+// for more robust and better error handling
+const mongoose = require("mongoose");
 
-const uri = process.env.DATABASE_URL || "your_fallback_mongodb_connection_string";
-const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
-
-async function connectDB() {
+const connectDB = async () => {
   try {
-    await client.connect();
-    console.log("Connected to MongoDB");
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL is not defined");
+    }
 
-    // Optionally, initialize collections here if needed for setup/validation
+    mongoose.set("debug", true);
+
+
+    const conn = await mongoose.connect(process.env.DATABASE_URL);
+
+   
+    console.log(`MongoDB Connected: ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`);
   } catch (error) {
-    console.error("Could not connect to MongoDB", error);
-    process.exit(1);
+    console.error(`Error: ${error.message}`);
+    process.exit(1); 
   }
-}
+};
 
-// Function to access a collection
-function getCollection(collectionName) {
-  return client.db("officemate").collection(collectionName);
-}
-
-module.exports = { connectDB, getCollection };
-
-// mongo.js
-// const mongoose = require('mongoose');
-
-// const connectDB = async () => {
-//   try {
-//     await mongoose.connect('mongodb://http://localhost:5173/', {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//       useCreateIndex: true,
-//       useFindAndModify: false,
-//     });
-//     console.log('MongoDB connected');
-//   } catch (error) {
-//     console.error('MongoDB connection error:', error);
-//     process.exit(1); // Exit process with failure
-//   }
-// };
-
-// module.exports = connectDB;
+module.exports = connectDB;

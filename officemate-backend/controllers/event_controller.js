@@ -1,51 +1,48 @@
-const { eventCollection } = require("../client/mongo");
-//const { ObjectId } = require('mongodb');
+const eventModel = require("../models/event");
 
-exports.createEvent = async (req, res) => {
-  const { title, description, startTime, endTime } = req.body;
+module.exports = { NewEvent, deleteEvent, getAllEvents };
+
+/* === GET ALL EVENTS=== */
+async function getAllEvents(req, res) {
+  const username = req.params.username;
   try {
-    const newEvent = await eventCollection.insertOne({ title, description, startTime, endTime });
-    res.status(201).json({ message: "Event created successfully", eventId: newEvent.insertedId });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    const eventData = await eventModel.getAll(username);
+    console.log(eventData);
+    res.json(eventData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ errMsg: err.message });
   }
+}
+
+/* === NEW EVENT == */
+async function NewEvent(req, res) {
+  try {
+    const { title, description, date } = req.body;
+    const newEvent = { title, description, date };
+    const result = await eventModel.insertOne(newEvent);
+    res.status(201).json({
+      message: "Event created successfully",
+      id: result.insertedId,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+}
 };
 
-exports.deleteEvent = async (req, res) => {
-  const { id } = req.params; // Assuming you're using the id in the URL to identify the event
+ /* === DELETE EVENT === */
+ async function deleteEvent(req, res) {
   try {
-    const result = await eventCollection.deleteOne({ _id: id });
-    //const result = await eventCollection.deleteOne({ _id: new ObjectId(id) });
-
+    const eventId = req.params.id;
+    const result = await eventModel.deleteOne({
+      _id: new ObjectId(noteId),
+    });
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "Event not found" });
+      res.status(404).json({ error: "Note not found." });
+    } else {
+      res.json({ message: "Note deleted successfully" });
     }
-    res.status(200).json({ message: "Event deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
-  }
-};
-
-// Example: Fetching all events
-exports.getAllEvents = async (req, res) => {
-  try {
-    const events = await eventCollection.find().toArray();
-    res.status(200).json(events);
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
-  }
-};
-
-// Example: Fetching a single event by ID
-exports.getEventById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const event = await eventCollection.findOne({ _id: id });
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-    res.status(200).json(event);
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    res.status(500).json({ error: "Internal server error." });
   }
 };

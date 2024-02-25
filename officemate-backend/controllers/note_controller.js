@@ -1,45 +1,97 @@
-const { notesCollection } = require("../client/mongo"); // Adjust the path as necessary
-exports.createNote = async (req, res) => {
-  const { title, content, userId } = req.body;
-  try {
-    const newNote = await notesCollection.insertOne({ title, content, userId });
-    res.status(201).json({ message: "Note created successfully", noteId: newNote.insertedId });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
-  }
+const noteModel = require("../models/notes");
+
+module.exports = {
+  newNote,
+  getOneNote,
+  getAllNotes,
+  updateOneNote,
+  deleteNote
 };
 
-exports.getAllNotes = async (req, res) => {
+/* === ALL NOTES === */
+async function getAllNotes(req, res) {
+  const username = req.params.username;
   try {
-    const notes = await notesCollection.find().toArray();
-    res.status(200).json(notes);
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    const noteData = await noteModel.getAll(username);
+    console.log(noteData);
+    res.json(noteData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ errMsg: err.message });
   }
-};
+}
 
-exports.getNoteById = async (req, res) => {
-  const { id } = req.params;
+/* === NEW NOTE === */
+async function newNote(req, res) {
   try {
-    const note = await notesCollection.findOne({ _id: id });
-    if (!note) {
-      return res.status(404).json({ message: "Note not found" });
+    const { Title, Date, Description, Calendar, Tasks} = req.body;
+    const newNote = {
+      Title,
+      Date,
+      Description,
+      Calendar,
+      Tasks,
+    };
+
+    const result = await noteModel.insertOne(newNote);
+
+    if (result.insertedId) {
+      res.status(201).json({
+        message: "Note created successfully",
+        id: result.insertedId,
+      });
+    } else {
+      res.status(500).json({ error: "Failed to create note" });
     }
-    res.status(200).json(note);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    res.status(500).json({ error: "Internal server error." });
   }
 };
 
-exports.deleteNote = async (req, res) => {
-  const { id } = req.params;
+/* === DELETE NOTE === */
+async function deleteNote(req, res) {
   try {
-    const result = await notesCollection.deleteOne({ _id: id });
+    const noteId = req.params.id;
+    const result = await noteModel.deleteOne({
+      _id: new ObjectId(noteId),
+    });
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "Note not found" });
+      res.status(404).json({ error: "Note not found." });
+    } else {
+      res.json({ message: "Note deleted successfully" });
     }
-    res.status(200).json({ message: "Note deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    res.status(500).json({ error: "Internal server error." });
   }
 };
+
+/* === GET ONE NOTE === */
+async function getOneNote(req, res) {
+  const username = req.params.username;
+  const noteId= req.query.noteId;
+  try {
+    const noteData = await noteModel.getOne(username, noteId);
+    res.json(noteData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ errMsg: err.message });
+  }
+}
+
+/* === UPDATE ONE NOTE === */
+async function updateOneNote(req, res) {
+  const username = req.params.username;
+  const noteId = req.query.noteId;
+  const body = req.body;
+  try {
+    const noteData = await noteModel.updateOne(username, noteId, body);
+    res.json(noteData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ errMsg: err.message });
+  }
+}
+
+
+
+

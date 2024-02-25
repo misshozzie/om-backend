@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-module.exports + {
+module.exports = {
     createJWT,
     getExpiry,
     verifyJWT,
