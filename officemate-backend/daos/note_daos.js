@@ -7,18 +7,16 @@ const TaskSchema = require("./task_daos").schema;
 //   Date: { type: Date, required: true },
 //   Description: { type: String, required: true },
 //   Calendar: { type: Boolean, default: true },
-//   Tasks: [TaskSchema], 
+//   Tasks: [TaskSchema],
 // }, { timestamps: true });
 
 const noteSchema = new mongoose.Schema({
   Title: String,
   Date: Date,
   Description: String,
-  Calendar: String, 
+  isEvent: { type: Boolean, default: false },
   Tasks: [TaskSchema],
 });
 
-const Note = mongoose.model('Note', noteSchema);
-
+const Note = mongoose.model("Note", noteSchema);
 module.exports = Note;
-

@@ -1,4 +1,5 @@
 const userModel= require("../models/users");
+const bcrypt = require("bcrypt");
 
 
 module.exports = {
@@ -14,6 +15,9 @@ module.exports = {
 /*=== CREATE USER === */
 async function createUser(req, res) {
   try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    req.body.password = hashedPassword;
     const userData = await userModel.createUser(req.body);
     res.json(userData);
   } catch (err) {

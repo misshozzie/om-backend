@@ -27,8 +27,7 @@ function verifyJWT(token) {
       token,
       process.env.SECRET,
       function (err, decoded) {
-        // If valid token, decoded will be the token's entire payload
-        // If invalid token, err will be set
+ 
         if (err) {
           return null;
         }

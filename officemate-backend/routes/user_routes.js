@@ -19,6 +19,6 @@ router.post("/create", userController.createUser);
 router.patch("/update", userController.updateUser);
 
 /* === ROUTE USER UPDATE === */
-router.delete("/adminPage", userController.deleteUser);
+router.delete("/:id", userController.deleteUser);
 
 module.exports = router;
