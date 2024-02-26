@@ -1,23 +1,16 @@
-const express = require("express");
-const createError = require("http-errors");
-const port = process.env.PORT || 5173;
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const logger = require("morgan");
-const cors = require("cors");
-const multer = require("multer");
-const securityMiddleware = require("./middlewares/security");
-const connectDB = require("./client/mongo")
+var express = require("express");
+var createError = require("http-errors");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
+var cors = require("cors");
+var connectDB = require("./client/mongo")
 require("dotenv").config();
-require("./routes/index");
-//const { userInfo } = require("os");
 
-const usersRouter = require("./routes/user_routes");
-const notesRouter = require("./routes/note_routes");
-const tasksRouter = require("./routes/task_routes");    
-const eventsRouter = require("./routes/event_routes");
-//const authRoutes = require("./routes/auth.routes");
-
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+var notesRouter = require('./routes/notes');
+var tasksRouter = require('./routes/tasks')
 
 connectDB();
 const app = express();
@@ -26,7 +19,7 @@ const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-app.use(cors({ origin: "http://localhost:5173" }));
+//app.use(cors({ origin: "http://localhost:5173" }));
 
 /*=== MIDDLEWARE === */
 app.use(logger("dev"));
@@ -34,19 +27,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors());
 
-app.use(securityMiddleware.checkJWT);
 
 /*=== ROUTES === */
-app.use("/users", usersRouter);
-app.use("/notes", notesRouter);
-app.use("/tasks", tasksRouter);
-app.use("/events", eventsRouter);
-//app.use("/api/auth", authRoutes);
-
-// app.get("/", (req, res) => {
-//   res.send("Hello World!");
-// });
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/notes', notesRouter);
+app.use('/tasks', tasksRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
