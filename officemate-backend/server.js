@@ -6,7 +6,7 @@ var logger = require("morgan");
 var cors = require("cors");
 var connectDB = require("./client/mongo")
 require("dotenv").config();
-var indexRouter = require("./routes/index");
+//var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/user_routes")
 var notesRouter = require("./routes/note_routes");
 var tasksRouter = require("./routes/task_routes")
@@ -30,7 +30,7 @@ app.use(cors());
 
 
 /*=== ROUTES === */
-app.use('/', indexRouter);
+//app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/notes', notesRouter);
 app.use('/tasks', tasksRouter);

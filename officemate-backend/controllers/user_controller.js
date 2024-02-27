@@ -1,7 +1,6 @@
 const userModel= require("../models/users");
 const bcrypt = require("bcrypt");
 
-
 module.exports = {
   createUser,
   loginUser,
@@ -35,7 +34,7 @@ async function loginUser(req, res) {
       res.status(400).json({ errorMsg: token.error });
       return;
     }
-    res.json(token.data);
+    res.send(token);
   } catch (err) {
     res.status(500).json({ errorMsg: err.message });
   }
@@ -44,9 +43,10 @@ async function loginUser(req, res) {
 /*=== FETCH ALL THE USERS === */
 async function getUsers(req, res) {
   try {
-    const users = await userModel.find().toArray();
+    const users = await userModel.getUsers();
     res.json(users);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Internal server error." });
   }
 }
@@ -67,15 +67,15 @@ async function updateUser(req, res) {
 /*=== DELETE USER === */
 async function deleteUser(req, res) {
   const { id } = req.params;
-
+  console.log(id);
   try {
-    const result = await userModel.deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount === 0) {
+    const result = await userModel.deleteUser(id);
+    if (!result.success) {
       return res.status(404).json({ error: "User not found." });
     }
-
-    res.json({ message: "User deleted successfully" });
+    res.json(result);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Internal server error." });
   }
 }
@@ -96,12 +96,13 @@ async function logoutUser(req, res) {
 /*=== GET LOGIN DETAILS === */
 async function getLoginDetails(req, res) {
   try {
+    console.log(req.query);
     const loginDetails = await userModel.getLoginDetails(req.query);
     if (loginDetails.success != true) {
       res.status(400).json({ errorMsg: loginDetails.error });
       return;
     }
-    res.json(loginDetails.data);
+    res.send(loginDetails);
   } catch (err) {
     res.status(500).json({ errorMsg: err.message });
   }
