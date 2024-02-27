@@ -10,7 +10,7 @@ function createJWT(payload) {
     return jwt.sign(
         { payload },
         process.env.SECRET,
-        { expiresIn:"24" }
+        { expiresIn:"24h" }
     );
 }
 
@@ -27,7 +27,9 @@ function verifyJWT(token) {
       token,
       process.env.SECRET,
       function (err, decoded) {
- 
+        // If valid token, decoded will be the token's entire payload
+        // If invalid token, err will be set
+        // console.log("sd",err);
         if (err) {
           return null;
         }

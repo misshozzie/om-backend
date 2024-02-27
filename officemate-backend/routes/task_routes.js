@@ -1,25 +1,23 @@
-const express = require("express");
-const router = express.Router();
+var express = require("express");
+var router = express.Router();
 const tasksController = require("../controllers/task_controller");
+/* GET users listing. */
 const auth = require("../middlewares/security");
 
-/* === ROUTE GET ALL TASK === */
-router.get("/note/:id", auth.checkJWT, tasksController.getAllTasksOfNote);
-
-/* === ROUTE NEW TASK === */
 router.post("/create", auth.checkJWT, tasksController.newTask);
 
-// /* === ROUTE UPDATE TASK === */
-// router.patch(
-//   "/notesid/:taskid",
-//   securityMiddleware.checkLogin,
-//   taskController.updateTasks
-// );
+// /* === ROUTE GET All NOTE === */
+router.get("/note/:id", auth.checkJWT, tasksController.getAllTasksOfNote);
 
-/* === ROUTE GET ONE TASK === */
 router.get("/one/:id", auth.checkJWT, tasksController.getOneTask);
 
-/* === ROUTE DELETE TASK === */
-router.delete("/notesid/:taskid", auth.checkJWT, tasksController.deleteTask);
+// // /* === ROUTE UPDATE NOTE === */
+// router.patch(
+//   "/:id",
+//   auth.checkJWT,
+//   notesController.updateOneNote
+// );
 
+// /* === ROUTE DELETE NOTE === */
+router.delete("/:id", auth.checkJWT, tasksController.deleteTask);
 module.exports = router;

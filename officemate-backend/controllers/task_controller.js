@@ -2,15 +2,13 @@ const taskModel = require("../models/tasks");
 
 module.exports = {
   newTask,
-  //showTasks,
-  //updateTasks,
-  getOneTask,
+  // updateTasks,
   deleteTask,
-  //updateTasks,
-  getAllTasksOfNote,
+  getOneTask,
+  getAllTasksOfNote
+  // updateTasks,
 };
 
-/* === GET ALL TASKS OF NOTE === */
 async function getAllTasksOfNote(req, res) {
   // const username = req.params.username;
   try {
@@ -23,44 +21,33 @@ async function getAllTasksOfNote(req, res) {
   }
 }
 
+
 /* === NEW TASK === */
 async function newTask(req, res) {
-  try {
-    const { Title, Tasks, NoteId } = req.body;
-
-    const newTask = {
-      Title,
-      Tasks,
-    };
-
-    const result = await taskModel.insertOne(newTask, NoteId);
-
-    if (result.insertedId) {
-      res.status(201).json({
-        message: "Task created successfully",
-        //id: result.insertedId,
-      });
-    } else {
-      res.status(500).json({ error: "Failed to create note" });
+    try {
+      const { Title, Task, NoteId } = req.body;
+      
+      const newTask = {
+        Title,
+        Task
+      };
+  
+      const result = await taskModel.createOne(newTask,NoteId);
+  
+      if (result.task) {
+        res.status(201).json({
+          message: "Task created successfully",
+          data: result.task
+          // id: result.insertedId,
+        });
+      } else {
+        res.status(500).json({ error: "Failed to create Task" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error." });
     }
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error." });
-  }
-}
-
-/* === ALL TASKS === */
-async function showTasks(req, res) {
-  const username = req.params.username;
-  try {
-    const noteData = await taskModel.getAll(username);
-    console.log(noteData);
-    res.json(noteData);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ errMsg: err.message });
-  }
-}
-
+  };
+  
 /* === DELETE NOTE === */
 async function deleteTask(req, res) {
   try {
@@ -71,14 +58,27 @@ async function deleteTask(req, res) {
     console.log(error);
     res.status(500).json({ error: "Internal server error." });
   }
-}
+};
 
-/* === GET ONE TASK === */
+/* === GET ONE NOTE === */
 async function getOneTask(req, res) {
-  const { id } = req.params;
+  const {id} = req.params;
   try {
     const taskData = await taskModel.findTaskById(id);
     res.json(taskData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ errMsg: err.message });
+  }
+}
+
+/* === UPDATE ONE NOTE === */
+async function updateOneNote(req, res) {
+  const noteId = req.params.id;
+  const body = req.body;
+  try {
+    const noteData = await noteModel.updateOne(noteId, body);
+    res.json(noteData);
   } catch (err) {
     console.log(err);
     res.status(500).json({ errMsg: err.message });

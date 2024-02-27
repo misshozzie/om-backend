@@ -16,10 +16,11 @@ async function getAllOfNote(noteId) {
     const taskData = await Note.findById(noteId);
 
     if (!taskData) {
-
+      // Handle the case where the user is not found
       console.log('Note not found');
-      return []; 
+      return []; // Return an empty array or consider throwing an error
     }
+    // console.log("data",t.Notes);
 
     const newTasks = []
     for (let index = 0; index < taskData.Tasks.length; index++) {
@@ -32,29 +33,33 @@ async function getAllOfNote(noteId) {
       }
     }
 
+    // Assuming 'notes' is a correctly defined reference in the user schema
+    // const noteDataPopulated = await noteData.populate('Notes');
+    // console.log(noteDataPopulated);
+    // Return the populated notes, ensuring an array is always returned
     return newTasks || [];
   } catch (error) {
     console.error('Error fetching notes:', error);
-    throw error; 
+    throw error; // Rethrow or handle as appropriate for your error handling strategy
   }
 }
+
 
 /*=== CREATE ONE ===*/
 async function createOne(tasks,noteId) {
   try {
-    console.log(tasks)
+    console.log(tasks);
     const newTask = await Task.create({
-      title: tasks.title,
+      title: tasks.Title,
       task: tasks.Task,
-      //noteID: tasks.noteID,
     });
 
-    const note = await Note.findById(tasks.noteID);
+    const note = await Note.findById(noteId);
     if (!note) {
       throw new Error("Note not found");
     }
 
-    note.Tasks.push(newNote);
+    note.Tasks.push(newTask);
     await note.save();
 
     return { message: 'Task added successfully', task: newTask };
@@ -91,34 +96,7 @@ async function findTaskById(taskID) {
   }
 }
 
-/*=== DELETE ONE ===*/
-async function deleteOne(taskID) {
-  try {
-    const deletedTask = await Task.findByIdAndDelete(taskID);
-    if (!deletedTask) {
-      throw new Error("Task not found in model");
-    }
-
-    const note = await Note.findOne({ "Tasks._id": taskID });
-    console.log("data",deletedTask,note);
-    if (note) {
-      console.log("data",deletedTask);
-      //note.Tasks.pull(taskID);
-      note.Tasks.pull(deletedTask);
-
-      await note.save();
-    } else {
-      // Handle the case where the Note document is not found
-      console.error("Note not found for the deleted task");
-    }
-
-    return deletedTask;
-  } catch (error) {
-    throw error;
-  }
-}
-
-/*=== UPDATE ONE ===*/
+/*=== UPDATE ONE===*/
 async function updateOne(taskId, data) {
   try {
     const taskID = taskId;
@@ -159,3 +137,32 @@ async function updateOne(taskId, data) {
     throw error;
   }
 }
+
+/*=== DELETE ONE ===*/
+async function deleteOne(taskID) {
+  try {
+    const deletedTask = await Task.findByIdAndDelete(taskID);
+    if (!deletedTask) {
+      throw new Error("Task not found in model");
+    }
+
+    // Find the corresponding Note document
+    const note = await Note.findOne({ "Tasks._id": taskID });
+    console.log("data",deletedTask,note);
+    if (note) {
+      console.log("data",deletedTask);
+      // Remove the deleted task from the tasks array
+      note.Tasks.pull(deletedTask);
+
+      await note.save();
+    } else {
+      // Handle the case where the Note document is not found
+      console.error("Note not found for the deleted task");
+    }
+
+    return deletedTask;
+  } catch (error) {
+    throw error;
+  }
+}
+
