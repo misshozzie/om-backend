@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const NoteSchema = require("./note_daos").schema;
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({

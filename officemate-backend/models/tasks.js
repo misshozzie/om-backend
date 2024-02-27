@@ -118,3 +118,44 @@ async function deleteOne(taskID) {
   }
 }
 
+/*=== UPDATE ONE ===*/
+async function updateOne(taskId, data) {
+  try {
+    const taskID = taskId;
+    const updateData = {
+      title: data.title, 
+      task: data.task, 
+    };
+
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: taskID },
+      updateData,
+      { new: true }
+    );
+    if (!updatedTask) {
+      throw new Error("Task not found");
+    }
+
+    const note = await Note.findOne({ "tasks._id": taskID });
+
+    if (note) {
+      // Update the task details within the Note's tasks array
+      const taskIndex = note.tasks.findIndex(
+        (task) => task._id.toString() === taskID.toString()
+      );
+      if (taskIndex !== -1) {
+        note.tasks[taskIndex].title = data.title;
+        note.tasks[taskIndex].task = data.task;
+        await note.save();
+      } else {
+        throw new Error("Task not found in Note");
+      }
+    } else {
+      throw new Error("Note not found for the updated task");
+    }
+
+    return updatedTask;
+  } catch (error) {
+    throw error;
+  }
+}
