@@ -118,12 +118,12 @@ async function updateOne(taskId, data) {
 
     if (note) {
       // Update the task details within the Note's tasks array
-      const taskIndex = note.tasks.findIndex(
+      const taskIndex = note.Tasks.findIndex(
         (task) => task._id.toString() === taskID.toString()
       );
       if (taskIndex !== -1) {
-        note.tasks[taskIndex].title = data.title;
-        note.tasks[taskIndex].task = data.task;
+        note.Tasks[taskIndex].title = data.title;
+        note.Tasks[taskIndex].task = data.task;
         await note.save();
       } else {
         throw new Error("Task not found in Note");

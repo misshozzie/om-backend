@@ -2,7 +2,7 @@ const taskModel = require("../models/tasks");
 
 module.exports = {
   newTask,
-  updateTasks,
+  updateTask,
   deleteTask,
   getOneTask,
   getAllTasksOfNote
@@ -73,7 +73,7 @@ async function getOneTask(req, res) {
 }
 
 /* === UPDATE ONE NOTE === */
-async function updateOneTask(req, res) {
+async function updateTask(req, res) {
   const taskId = req.params.id;
   const body = req.body;
   try {
