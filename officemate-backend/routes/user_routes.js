@@ -4,6 +4,7 @@ var router = express.Router();
 const userController = require("../controllers/user_controller")
 /* GET users listing. */
 
+router.get("/login", userController.getLoginDetails);
 router.post('/create',userController.createUser)
 router.get('/all',userController.getUsers)
 router.post('/login',userController.loginUser)
