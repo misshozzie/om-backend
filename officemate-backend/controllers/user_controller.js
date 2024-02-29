@@ -80,7 +80,7 @@ async function deleteUser(req, res) {
   }
 }
 /*=== LOGOUT USER === */
-async function logoutUser(req, res) {
+async function logoutUser  (req, res) {
   try {
     const result = await userModel.logoutUser(req.body);
     if (!result.success) {
