@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 module.exports = {
   getUsers,
   loginUser,
+  updateUser,
   createUser,
   deleteUser
 };
@@ -52,7 +53,7 @@ async function loginUser(body) {
 
 /*=== CREATE USER ===*/
 async function createUser(body) {
-  //
+  
   const user = await usersDao.findOne({ email: body.email });
   console.log(user);
   if (user) {
@@ -69,3 +70,24 @@ async function deleteUser(id) {
   return { success: true, data: delUser };
 }
 
+async function updateUser(body) {
+  
+  const user = await usersDao.findOne({ email: body.email });
+  console.log("user", user);
+  if (!user) {
+    return { success: false, error: "user does not exist" };
+  } else if (user.password !== body.passwordold) {
+    console.log("user.password", user.password);
+    console.log("body.passwordold", body.passwordold);
+    return { success: false, error: "old password incorrect" };
+  } else if (user.password === body.passwordnew) {
+    return { success: false, error: "new password same as old" };
+  }
+
+  user.password = body.password;
+  user.salt = body.salt;
+  user.iterations = body.iterations;
+
+  await user.save();
+  return { success: true, data: "password updated" };
+}
