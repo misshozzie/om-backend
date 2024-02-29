@@ -11,13 +11,10 @@ router.get("/note/:id", auth.checkJWT, tasksController.getAllTasksOfNote);
 
 router.get("/one/:id", auth.checkJWT, tasksController.getOneTask);
 
-// // /* === ROUTE UPDATE NOTE === */
-// router.patch(
-//   "/:id",
-//   auth.checkJWT,
-//   notesController.updateOneNote
-// );
+// /* === ROUTE UPDATE NOTE === */
+router.patch("/:id", auth.checkJWT, tasksController.updateOneNote);
 
 // /* === ROUTE DELETE NOTE === */
 router.delete("/:id", auth.checkJWT, tasksController.deleteTask);
+
 module.exports = router;

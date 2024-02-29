@@ -2,7 +2,7 @@ const taskModel = require("../models/tasks");
 
 module.exports = {
   newTask,
-  // updateTasks,
+  updateTasks,
   deleteTask,
   getOneTask,
   getAllTasksOfNote
@@ -73,12 +73,12 @@ async function getOneTask(req, res) {
 }
 
 /* === UPDATE ONE NOTE === */
-async function updateOneNote(req, res) {
-  const noteId = req.params.id;
+async function updateOneTask(req, res) {
+  const taskId = req.params.id;
   const body = req.body;
   try {
-    const noteData = await noteModel.updateOne(noteId, body);
-    res.json(noteData);
+    const taskData = await taskModel.updateOne(taskId, body);
+    res.json(taskData);
   } catch (err) {
     console.log(err);
     res.status(500).json({ errMsg: err.message });
